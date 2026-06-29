@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Serilog Configuration
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.File("logs/ems-log.txt", rollingInterval: System.Net.Http.HttpRequestException.RollingInterval.Day)
+    .WriteTo.File("logs/ems-log.txt", rollingInterval: Serilog.RollingInterval.Day)
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -36,10 +36,10 @@ builder.Services.AddScoped<ILeaveService, LeaveService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 // AutoMapper
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 
 // FluentValidation
-builder.Services.AddValidatorsFromAssemblyContaining<EMS.Application.Validations.EmployeeValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<EMS.Application.Validations.CreateEmployeeValidator>();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"];
