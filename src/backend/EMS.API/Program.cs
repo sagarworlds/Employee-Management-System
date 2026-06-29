@@ -22,6 +22,17 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+// CORS Configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 // Database Configuration
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -74,6 +85,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// CORS must be called before UseAuthentication/UseAuthorization
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
