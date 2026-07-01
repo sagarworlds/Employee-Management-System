@@ -61,6 +61,15 @@ namespace EMS.Application.Services
             return dto;
         }
 
+        public async Task<EmployeeDto?> GetByUserIdAsync(Guid userId)
+        {
+            var employees = await _employeeRepository.FindAsync(e => e.ApplicationUserId == userId);
+            var employee = employees.FirstOrDefault();
+            if (employee == null) return null;
+
+            return await GetByIdAsync(employee.Id);
+        }
+
         public async Task<EmployeeDto> CreateAsync(CreateEmployeeDto dto)
         {
             var employee = _mapper.Map<Employee>(dto);

@@ -9,6 +9,7 @@ namespace EMS.Application.Interfaces.Services
     {
         Task<IEnumerable<EmployeeDto>> GetAllAsync();
         Task<EmployeeDto?> GetByIdAsync(Guid id);
+        Task<EmployeeDto?> GetByUserIdAsync(Guid userId);
         Task<EmployeeDto> CreateAsync(CreateEmployeeDto dto);
         Task<bool> UpdateAsync(Guid id, UpdateEmployeeDto dto);
         Task<bool> DeleteAsync(Guid id);

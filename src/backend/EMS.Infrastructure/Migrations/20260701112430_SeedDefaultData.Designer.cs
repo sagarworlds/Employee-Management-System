@@ -3,6 +3,7 @@ using System;
 using EMS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EMS.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260701112430_SeedDefaultData")]
+    partial class SeedDefaultData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
@@ -261,9 +264,6 @@ namespace EMS.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Address")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("ApplicationUserId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedDate")

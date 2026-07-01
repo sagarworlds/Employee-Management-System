@@ -1,0 +1,31 @@
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h2>EMS Portal</h2>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-group">
+      <span class="nav-label">Main</span>
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    </div>
+
+    <div class="nav-group" *ngIf="isAdmin()">
+      <span class="nav-label">Administration</span>
+      <a routerLink="/employees" routerLinkActive="active">Employees</a>
+      <a routerLink="/departments" routerLinkActive="active">Departments</a>
+      <a routerLink="/designations" routerLinkActive="active">Designations</a>
+    </div>
+
+    <div class="nav-group">
+      <span class="nav-label">Self Service</span>
+      <a routerLink="/my-profile" routerLinkActive="active" *ngIf="isEmployee()">My Profile</a>
+      <a routerLink="/attendance" routerLinkActive="active">Attendance</a>
+      <a routerLink="/leave-requests" routerLinkActive="active">Leave Requests</a>
+    </div>
+
+    <div class="nav-group">
+      <span class="nav-label">System</span>
+      <a (click)="logout()" style="cursor: pointer">Logout</a>
+    </div>
+  </nav>
+</div>

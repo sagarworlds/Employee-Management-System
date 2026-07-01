@@ -28,6 +28,11 @@ namespace EMS.Infrastructure.Repositories
             return await _dbSet.ToListAsync();
         }
 
+        public async Task<IEnumerable<T>> FindAsync(System.Linq.Expressions.Expression<System.Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
+        }
+
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);

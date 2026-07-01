@@ -14,6 +14,7 @@ namespace EMS.Domain.Entities
         public DateTime DateOfJoining { get; set; }
         public Guid DepartmentId { get; set; }
         public Guid DesignationId { get; set; }
+        public Guid? ApplicationUserId { get; set; }
         public decimal Salary { get; set; }
         public string? Address { get; set; }
         public string Status { get; set; } = "Active"; // Active, Inactive, Terminated

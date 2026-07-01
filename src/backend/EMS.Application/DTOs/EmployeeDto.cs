@@ -35,6 +35,7 @@ namespace EMS.Application.DTOs
         public Guid DesignationId { get; set; }
         public decimal Salary { get; set; }
         public string? Address { get; set; }
+        public Guid? ApplicationUserId { get; set; }
     }
 
     public class UpdateEmployeeDto

@@ -75,6 +75,18 @@ namespace EMS.Infrastructure.Persistence
                 entity.Property(e => e.LeaveType).HasMaxLength(100);
             });
 
+            // ApplicationRole
+            modelBuilder.Entity<ApplicationRole>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            });
+
+            modelBuilder.Entity<ApplicationRole>().HasData(
+                new ApplicationRole { Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), Name = "Admin" },
+                new ApplicationRole { Id = Guid.Parse("00000000-0000-0000-0000-000000000002"), Name = "Employee" }
+            );
+
             // ApplicationUser
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
@@ -87,12 +99,41 @@ namespace EMS.Infrastructure.Persistence
                       .HasForeignKey(u => u.RoleId);
             });
 
-            // ApplicationRole
-            modelBuilder.Entity<ApplicationRole>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-            });
+            modelBuilder.Entity<ApplicationUser>().HasData(
+                new ApplicationUser
+                {
+                    Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+                    UserName = "admin",
+                    Email = "admin@ems.com",
+                    PasswordHash = "Admin123!",
+                    FullName = "System Administrator",
+                    RoleId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                    IsActive = true,
+                    CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new ApplicationUser
+                {
+                    Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
+                    UserName = "user1",
+                    Email = "user1@ems.com",
+                    PasswordHash = "User123!",
+                    FullName = "John Doe",
+                    RoleId = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+                    IsActive = true,
+                    CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new ApplicationUser
+                {
+                    Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
+                    UserName = "user2",
+                    Email = "user2@ems.com",
+                    PasswordHash = "User123!",
+                    FullName = "Jane Smith",
+                    RoleId = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+                    IsActive = true,
+                    CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                }
+            );
 
             // AuditLog
             modelBuilder.Entity<AuditLog>(entity =>
