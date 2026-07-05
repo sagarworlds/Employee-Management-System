@@ -1,0 +1,53 @@
+<div class="page-container" style="max-width: 600px;">
+  <div class="page-header" style="margin-bottom: 1.5rem;">
+    <div>
+      <h1 class="page-title">{{ isEditMode ? 'Edit Department' : 'Create Department' }}</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        {{ isEditMode ? 'Update department properties' : 'Configure a new company department.' }}
+      </p>
+    </div>
+    <a class="btn btn-secondary" routerLink="/departments">Back to Departments</a>
+  </div>
+
+  <div *ngIf="isLoading" class="card" style="display: flex; justify-content: center; align-items: center; padding: 3rem;">
+    <div class="spinner"></div>
+    <span style="margin-left: 1rem; color: var(--text-muted);">Loading department details...</span>
+  </div>
+
+  <div *ngIf="errorMessage && !isLoading" class="card" style="background-color: #fee2e2; border-color: #fca5a5; color: #991b1b; margin-bottom: 1.5rem; padding: 1rem;">
+    {{ errorMessage }}
+  </div>
+
+  <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading" class="card">
+    <div class="form-grid">
+      <!-- Department Name -->
+      <div class="form-field full-width">
+        <label for="name">Department Name *</label>
+        <input id="name" type="text" formControlName="name" placeholder="e.g. Human Resources" [class.input-error]="isFieldInvalid('name')">
+        <div *ngIf="isFieldInvalid('name')" class="error-msg">Department name is required.</div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-field full-width">
+        <label for="description">Description</label>
+        <textarea id="description" formControlName="description" rows="4" placeholder="Briefly describe this department's functions..."></textarea>
+      </div>
+
+      <!-- Status Checkbox (Edit Mode Only) -->
+      <div class="form-field checkbox-field full-width" *ngIf="isEditMode">
+        <label for="isActive" class="checkbox-container">
+          <input id="isActive" type="checkbox" formControlName="isActive">
+          <span class="checkbox-label">Department is Active</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a class="btn btn-secondary" routerLink="/departments">Cancel</a>
+      <button class="btn btn-primary" type="submit" [disabled]="isSubmitting">
+        <div class="spinner" *ngIf="isSubmitting" style="width: 16px; height: 16px; border-width: 2px; margin-right: 0.5rem;"></div>
+        {{ isEditMode ? 'Update Department' : 'Create Department' }}
+      </button>
+    </div>
+  </form>
+</div>

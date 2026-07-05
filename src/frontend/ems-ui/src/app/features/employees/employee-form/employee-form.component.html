@@ -1,0 +1,137 @@
+<div class="page-container" style="max-width: 800px;">
+  <div class="page-header" style="margin-bottom: 1.5rem;">
+    <div>
+      <h1 class="page-title">{{ isEditMode ? 'Edit Employee' : 'Add Employee' }}</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        {{ isEditMode ? 'Update details for ' + employeeForm.get('firstName')?.value + ' ' + employeeForm.get('lastName')?.value : 'Enter details to create a new employee profile.' }}
+      </p>
+    </div>
+    <a class="btn btn-secondary" routerLink="/employees">Back to Directory</a>
+  </div>
+
+  <div *ngIf="isLoading" class="card" style="display: flex; justify-content: center; align-items: center; padding: 3rem;">
+    <div class="spinner"></div>
+    <span style="margin-left: 1rem; color: var(--text-muted);">Loading employee profile details...</span>
+  </div>
+
+  <div *ngIf="errorMessage && !isLoading" class="card" style="background-color: #fee2e2; border-color: #fca5a5; color: #991b1b; margin-bottom: 1.5rem; padding: 1rem;">
+    {{ errorMessage }}
+  </div>
+
+  <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading" class="card">
+    <div class="form-grid">
+      <!-- First Name -->
+      <div class="form-field">
+        <label for="firstName">First Name *</label>
+        <input id="firstName" type="text" formControlName="firstName" placeholder="John" [class.input-error]="isFieldInvalid('firstName')">
+        <div *ngIf="isFieldInvalid('firstName')" class="error-msg">First name is required.</div>
+      </div>
+
+      <!-- Last Name -->
+      <div class="form-field">
+        <label for="lastName">Last Name *</label>
+        <input id="lastName" type="text" formControlName="lastName" placeholder="Doe" [class.input-error]="isFieldInvalid('lastName')">
+        <div *ngIf="isFieldInvalid('lastName')" class="error-msg">Last name is required.</div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-field">
+        <label for="email">Email *</label>
+        <input id="email" type="email" formControlName="email" placeholder="john.doe@company.com" [class.input-error]="isFieldInvalid('email')">
+        <div *ngIf="isFieldInvalid('email')" class="error-msg">Enter a valid email address.</div>
+      </div>
+
+      <!-- Phone -->
+      <div class="form-field">
+        <label for="phone">Phone Number *</label>
+        <input id="phone" type="text" formControlName="phone" placeholder="+1 (555) 019-2834" [class.input-error]="isFieldInvalid('phone')">
+        <div *ngIf="isFieldInvalid('phone')" class="error-msg">Phone number is required.</div>
+      </div>
+
+      <!-- Date of Birth -->
+      <div class="form-field">
+        <label for="dateOfBirth">Date of Birth *</label>
+        <input id="dateOfBirth" type="date" formControlName="dateOfBirth" [class.input-error]="isFieldInvalid('dateOfBirth')">
+        <div *ngIf="isFieldInvalid('dateOfBirth')" class="error-msg">Select a valid date of birth.</div>
+      </div>
+
+      <!-- Gender -->
+      <div class="form-field">
+        <label for="gender">Gender *</label>
+        <select id="gender" formControlName="gender" [class.input-error]="isFieldInvalid('gender')">
+          <option value="" disabledSelected>Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+        <div *ngIf="isFieldInvalid('gender')" class="error-msg">Select gender from options.</div>
+      </div>
+
+      <!-- Date of Joining -->
+      <div class="form-field">
+        <label for="dateOfJoining">Date of Joining *</label>
+        <input id="dateOfJoining" type="date" formControlName="dateOfJoining" [class.input-error]="isFieldInvalid('dateOfJoining')">
+        <div *ngIf="isFieldInvalid('dateOfJoining')" class="error-msg">Select valid date of joining.</div>
+      </div>
+
+      <!-- Salary -->
+      <div class="form-field">
+        <label for="salary">Monthly Salary ($) *</label>
+        <input id="salary" type="number" formControlName="salary" placeholder="5000" [class.input-error]="isFieldInvalid('salary')">
+        <div *ngIf="isFieldInvalid('salary')" class="error-msg">Salary must be greater than 0.</div>
+      </div>
+
+      <!-- Department -->
+      <div class="form-field">
+        <label for="departmentId">Department *</label>
+        <select id="departmentId" formControlName="departmentId" [class.input-error]="isFieldInvalid('departmentId')">
+          <option value="" disabledSelected>Select Department</option>
+          <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
+        </select>
+        <div *ngIf="isFieldInvalid('departmentId')" class="error-msg">Select a department.</div>
+      </div>
+
+      <!-- Designation -->
+      <div class="form-field">
+        <label for="designationId">Designation *</label>
+        <select id="designationId" formControlName="designationId" [class.input-error]="isFieldInvalid('designationId')">
+          <option value="" disabledSelected>Select Designation</option>
+          <option *ngFor="let desig of designations" [value]="desig.id">{{ desig.name }}</option>
+        </select>
+        <div *ngIf="isFieldInvalid('designationId')" class="error-msg">Select a designation.</div>
+      </div>
+
+      <!-- Address -->
+      <div class="form-field full-width">
+        <label for="address">Residential Address</label>
+        <textarea id="address" formControlName="address" rows="3" placeholder="123 Main St, Apt 4B, New York, NY 10001"></textarea>
+      </div>
+
+      <!-- Status (Edit Mode Only) -->
+      <div class="form-field" *ngIf="isEditMode">
+        <label for="status">Employment Status</label>
+        <select id="status" formControlName="status">
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+          <option value="Terminated">Terminated</option>
+        </select>
+      </div>
+
+      <!-- Is Active Checkbox (Edit Mode Only) -->
+      <div class="form-field checkbox-field" *ngIf="isEditMode">
+        <label for="isActive" class="checkbox-container">
+          <input id="isActive" type="checkbox" formControlName="isActive">
+          <span class="checkbox-label">Is Active Account</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a class="btn btn-secondary" routerLink="/employees">Cancel</a>
+      <button class="btn btn-primary" type="submit" [disabled]="isSubmitting">
+        <div class="spinner" *ngIf="isSubmitting" style="width: 16px; height: 16px; border-width: 2px; margin-right: 0.5rem;"></div>
+        {{ isEditMode ? 'Update Profile' : 'Save Employee' }}
+      </button>
+    </div>
+  </form>
+</div>

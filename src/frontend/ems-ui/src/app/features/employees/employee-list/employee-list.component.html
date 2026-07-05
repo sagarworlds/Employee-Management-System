@@ -1,25 +1,84 @@
-<div class="container">
-  <h2>Employee List</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Email</th>
-        <th>Department</th>
-        <th>Designation</th>
-        <th>Salary</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let emp of employees">
-        <td>{{ emp.firstName }}</td>
-        <td>{{ emp.lastName }}</td>
-        <td>{{ emp.email }}</td>
-        <td>{{ emp.departmentName }}</td>
-        <td>{{ emp.designationName }}</td>
-        <td>{{ emp.salary | currency }}</td>
-      </tr>
-    </tbody>
-  </table>
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Employee Directory</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Manage all company staff members, their roles, and departments.</p>
+    </div>
+    <button *ngIf="isAdmin" class="btn btn-primary" routerLink="/employees/new">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Add Employee
+    </button>
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="state-container">
+      <div class="spinner"></div>
+      <p>Loading employee directory...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="errorMessage" class="state-container error-state">
+      <p>{{ errorMessage }}</p>
+      <button class="btn btn-secondary" (click)="loadEmployees()">Retry</button>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && !errorMessage && employees.length === 0" class="state-container">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); margin-bottom: 1rem;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      <p>No employees found in the directory.</p>
+      <button *ngIf="isAdmin" class="btn btn-primary" style="margin-top: 1rem;" routerLink="/employees/new">Add First Employee</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive" *ngIf="!isLoading && !errorMessage && employees.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Department</th>
+            <th>Designation</th>
+            <th>Salary</th>
+            <th>Status</th>
+            <th *ngIf="isAdmin" style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of employees">
+            <td>
+              <div style="font-weight: 600; color: var(--text-main);">
+                {{ emp.firstName }} {{ emp.lastName }}
+              </div>
+            </td>
+            <td>{{ emp.email }}</td>
+            <td>{{ emp.phone || '-' }}</td>
+            <td>
+              <span class="badge badge-info" style="font-weight: 500;">
+                {{ emp.departmentName || 'Unassigned' }}
+              </span>
+            </td>
+            <td>{{ emp.designationName || 'Unassigned' }}</td>
+            <td style="font-weight: 500;">{{ emp.salary | currency }}</td>
+            <td>
+              <span [class]="emp.isActive ? 'badge badge-success' : 'badge badge-danger'">
+                {{ emp.status || (emp.isActive ? 'Active' : 'Inactive') }}
+              </span>
+            </td>
+            <td *ngIf="isAdmin" style="text-align: right;">
+              <div class="action-buttons">
+                <button class="btn-icon btn-edit" (click)="editEmployee(emp.id)" title="Edit Employee">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+                <button class="btn-icon btn-delete" (click)="deleteEmployee(emp.id)" title="Delete Employee">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
