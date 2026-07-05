@@ -11,7 +11,9 @@
         <input [(ngModel)]="credentials.password" name="password" type="password" required>
       </div>
       <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
-      <button type="submit">Login</button>
+      <button type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Logging in...' : 'Login' }}
+      </button>
     </form>
   </div>
 </div>

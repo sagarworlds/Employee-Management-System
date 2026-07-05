@@ -14,13 +14,24 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   credentials = { username: '', password: '' };
   errorMessage = '';
+  isLoading = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onLogin() {
+    if (this.isLoading) return;
+    this.isLoading = true;
+    this.errorMessage = '';
+    
     this.authService.login(this.credentials).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
-      error: (err) => this.errorMessage = 'Invalid username or password'
+      next: () => {
+        this.isLoading = false;
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = 'Invalid username or password';
+      }
     });
   }
 }

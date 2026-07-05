@@ -14,13 +14,19 @@ export interface AuthResponse {
 })
 export class AuthService {
   private readonly tokenKey = 'ems_token';
+  private readonly userKey = 'ems_username';
+  private readonly roleKey = 'ems_role';
 
   constructor(private http: HttpClient) {}
 
   login(credentials: any): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/api/Auth/login`, credentials)
       .pipe(
-        tap(res => localStorage.setItem(this.tokenKey, res.token))
+        tap(res => {
+          localStorage.setItem(this.tokenKey, res.token);
+          localStorage.setItem(this.userKey, res.userName);
+          localStorage.setItem(this.roleKey, res.role);
+        })
       );
   }
 
@@ -30,10 +36,24 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.userKey);
+    localStorage.removeItem(this.roleKey);
   }
 
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
+  }
+
+  getUserName(): string | null {
+    return localStorage.getItem(this.userKey);
+  }
+
+  getRole(): string | null {
+    return localStorage.getItem(this.roleKey);
+  }
+
+  isAdmin(): boolean {
+    return this.getRole() === 'Admin';
   }
 
   isAuthenticated(): boolean {

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -8,17 +8,15 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss']
+  styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent {
   private authService = inject(AuthService);
-
+  private router = inject(Router);
   userRole: string = 'Employee';
 
   constructor() {
-    // In a real app, we would get the role from the token via AuthService
-    // For now, we can mock it or get it from localStorage
-    const role = localStorage.getItem('userRole') || 'Employee';
+    const role = this.authService.getRole() || 'Employee';
     this.userRole = role;
   }
 
@@ -28,5 +26,9 @@ export class SidebarComponent {
 
   isEmployee(): boolean {
     return this.userRole === 'Employee';
+  }
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
