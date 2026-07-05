@@ -13,15 +13,18 @@ namespace EMS.API.Controllers
     {
         private readonly IGenericRepository<ApplicationUser> _userRepository;
         private readonly IGenericRepository<ApplicationRole> _roleRepository;
+        private readonly IGenericRepository<Employee> _employeeRepository;
         private readonly ITokenService _tokenService;
 
         public AuthController(
             IGenericRepository<ApplicationUser> userRepository,
             IGenericRepository<ApplicationRole> roleRepository,
+            IGenericRepository<Employee> employeeRepository,
             ITokenService tokenService)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
+            _employeeRepository = employeeRepository;
             _tokenService = tokenService;
         }
 
@@ -54,6 +57,17 @@ namespace EMS.API.Controllers
 
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();
+
+            // Auto-link existing Employee record if email matches
+            var employees = await _employeeRepository.GetAllAsync();
+            var employee = employees.FirstOrDefault(e => e.Email.Equals(registerDto.Email, StringComparison.OrdinalIgnoreCase));
+            if (employee != null)
+            {
+                employee.ApplicationUserId = user.Id;
+                _employeeRepository.Update(employee);
+                await _employeeRepository.SaveChangesAsync();
+            }
+
             return Ok("User registered successfully");
         }
     }

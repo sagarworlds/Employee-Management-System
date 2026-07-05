@@ -15,17 +15,20 @@ namespace EMS.Application.Services
         private readonly IGenericRepository<Employee> _employeeRepository;
         private readonly IGenericRepository<Department> _departmentRepository;
         private readonly IGenericRepository<Designation> _designationRepository;
+        private readonly IGenericRepository<ApplicationUser> _userRepository;
         private readonly IMapper _mapper;
 
         public EmployeeService(
             IGenericRepository<Employee> employeeRepository,
             IGenericRepository<Department> departmentRepository,
             IGenericRepository<Designation> designationRepository,
+            IGenericRepository<ApplicationUser> userRepository,
             IMapper mapper)
         {
             _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
             _designationRepository = designationRepository;
+            _userRepository = userRepository;
             _mapper = mapper;
         }
 
@@ -74,6 +77,18 @@ namespace EMS.Application.Services
         {
             var employee = _mapper.Map<Employee>(dto);
             employee.Id = Guid.NewGuid();
+
+            // Auto-link to existing user by email if not explicitly provided
+            if (employee.ApplicationUserId == null)
+            {
+                var users = await _userRepository.GetAllAsync();
+                var user = users.FirstOrDefault(u => u.Email.Equals(employee.Email, StringComparison.OrdinalIgnoreCase));
+                if (user != null)
+                {
+                    employee.ApplicationUserId = user.Id;
+                }
+            }
+
             await _employeeRepository.AddAsync(employee);
             await _employeeRepository.SaveChangesAsync();
 
