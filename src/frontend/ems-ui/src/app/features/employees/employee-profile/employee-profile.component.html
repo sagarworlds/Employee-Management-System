@@ -1,0 +1,85 @@
+<div class="page-container" style="max-width: 800px;">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">My Profile</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">View and verify your registered employment details.</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="card" style="display: flex; justify-content: center; align-items: center; padding: 3rem;">
+    <div class="spinner"></div>
+    <span style="margin-left: 1rem; color: var(--text-muted);">Loading your profile details...</span>
+  </div>
+
+  <div *ngIf="errorMessage && !isLoading" class="card" style="background-color: #fee2e2; border-color: #fca5a5; color: #991b1b; padding: 1.5rem; text-align: center;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--danger); margin-bottom: 1rem;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <p style="font-weight: 600;">{{ errorMessage }}</p>
+  </div>
+
+  <div class="card profile-card" *ngIf="employee && !isLoading">
+    <div class="profile-header">
+      <div class="avatar-circle">
+        {{ employee.firstName[0] }}{{ employee.lastName[0] }}
+      </div>
+      <div class="header-details">
+        <h2 style="font-size: 1.5rem; color: var(--text-main); margin-bottom: 0.25rem;">
+          {{ employee.firstName }} {{ employee.lastName }}
+        </h2>
+        <span class="badge badge-info" style="font-size: 0.85rem; font-weight: 600;">
+          {{ employee.designationName }}
+        </span>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+      <div class="grid-item">
+        <span class="grid-label">Email Address</span>
+        <span class="grid-value">{{ employee.email }}</span>
+      </div>
+
+      <div class="grid-item">
+        <span class="grid-label">Phone Number</span>
+        <span class="grid-value">{{ employee.phone || '-' }}</span>
+      </div>
+
+      <div class="grid-item">
+        <span class="grid-label">Department</span>
+        <span class="grid-value">{{ employee.departmentName }}</span>
+      </div>
+
+      <div class="grid-item">
+        <span class="grid-label">Employment Status</span>
+        <span class="badge" [class]="employee.isActive ? 'badge-success' : 'badge-danger'" style="width: fit-content; margin-top: 0.25rem;">
+          {{ employee.status || (employee.isActive ? 'Active' : 'Inactive') }}
+        </span>
+      </div>
+
+      <div class="grid-item">
+        <span class="grid-label">Date of Birth</span>
+        <span class="grid-value">{{ formatDate(employee.dateOfBirth) }}</span>
+      </div>
+
+      <div class="grid-item">
+        <span class="grid-label">Date of Joining</span>
+        <span class="grid-value">{{ formatDate(employee.dateOfJoining) }}</span>
+      </div>
+
+      <div class="grid-item">
+        <span class="grid-label">Gender</span>
+        <span class="grid-value">{{ employee.gender }}</span>
+      </div>
+
+      <div class="grid-item">
+        <span class="grid-label">Monthly Salary</span>
+        <span class="grid-value" style="font-weight: 600; color: var(--text-main);">
+          {{ employee.salary | currency }}
+        </span>
+      </div>
+
+      <div class="grid-item full-width">
+        <span class="grid-label">Residential Address</span>
+        <span class="grid-value">{{ employee.address || 'No residential address recorded' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
