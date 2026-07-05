@@ -1,0 +1,106 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Leave Request Directory</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Review and request time off and medical leave.</p>
+    </div>
+    
+    <!-- Apply button for employees / self logging -->
+    <a class="btn btn-primary" routerLink="/leave/new" *ngIf="!isAdmin">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.25rem;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+      Request Time Off
+    </a>
+
+    <!-- Admin Employee Selector -->
+    <div *ngIf="isAdmin" class="select-employee-container">
+      <label for="employeeSelect" style="margin-bottom: 0.25rem;">Select Employee:</label>
+      <select id="employeeSelect" [(ngModel)]="selectedEmployeeId" (change)="onEmployeeChange()" style="width: auto; min-width: 250px;">
+        <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.lastName }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="card" style="background-color: #fee2e2; border-color: #fca5a5; color: #991b1b; margin-bottom: 1.5rem; padding: 1rem;">
+    {{ errorMessage }}
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 1.1rem; color: var(--text-main); font-weight: 600;">
+        Leave History {{ currentEmployee ? 'for ' + currentEmployee.firstName + ' ' + currentEmployee.lastName : '' }}
+      </h3>
+      <span class="badge badge-info" style="font-weight: 600;">{{ records.length }} Requests</span>
+    </div>
+
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="state-container">
+      <div class="spinner"></div>
+      <p>Loading leave logs...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && records.length === 0" class="state-container">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+      <p>No leave requests found.</p>
+      <a class="btn btn-primary" style="margin-top: 1rem;" routerLink="/leave/new" *ngIf="!isAdmin">Apply for Leave</a>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive" *ngIf="!isLoading && records.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Duration</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let rec of records">
+            <td style="font-weight: 600; color: var(--text-main);">
+              {{ rec.leaveType }}
+            </td>
+            <td>
+              <div>{{ formatDate(rec.startDate) }} - {{ formatDate(rec.endDate) }}</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem;">
+                Total: {{ rec.totalDays }} {{ rec.totalDays === 1 ? 'day' : 'days' }}
+              </div>
+            </td>
+            <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" [title]="rec.reason">
+              {{ rec.reason }}
+            </td>
+            <td>
+              <span class="badge" [class]="getStatusClass(rec.status)">
+                {{ rec.status }}
+              </span>
+            </td>
+            <td style="text-align: right;">
+              <!-- Admin Controls: Approve/Reject -->
+              <div class="action-buttons" *ngIf="isAdmin && rec.status === 'Pending'">
+                <button class="btn btn-success btn-xs" (click)="approveLeave(rec.id)" [disabled]="isActionLoading" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+                  Approve
+                </button>
+                <button class="btn btn-danger btn-xs" (click)="rejectLeave(rec.id)" [disabled]="isActionLoading" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+                  Reject
+                </button>
+              </div>
+
+              <!-- Employee Controls: Cancel Request -->
+              <div class="action-buttons" *ngIf="!isAdmin && rec.status === 'Pending'">
+                <button class="btn btn-secondary btn-xs" (click)="deleteLeave(rec.id)" [disabled]="isActionLoading" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+                  Cancel
+                </button>
+              </div>
+
+              <span *ngIf="rec.status !== 'Pending'" style="color: var(--text-muted); font-size: 0.85rem;">
+                Processed
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

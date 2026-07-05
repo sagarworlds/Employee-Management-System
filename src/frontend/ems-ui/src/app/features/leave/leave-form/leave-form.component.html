@@ -1,0 +1,77 @@
+<div class="page-container" style="max-width: 600px;">
+  <div class="page-header" style="margin-bottom: 1.5rem;">
+    <div>
+      <h1 class="page-title">Apply for Leave</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Submit a new request for planned time off, casual, or medical leaves.
+      </p>
+    </div>
+    <a class="btn btn-secondary" routerLink="/leave">Back to Directory</a>
+  </div>
+
+  <div *ngIf="isLoading" class="card" style="display: flex; justify-content: center; align-items: center; padding: 3rem;">
+    <div class="spinner"></div>
+    <span style="margin-left: 1rem; color: var(--text-muted);">Fetching details...</span>
+  </div>
+
+  <div *ngIf="errorMessage && !isLoading" class="card" style="background-color: #fee2e2; border-color: #fca5a5; color: #991b1b; margin-bottom: 1.5rem; padding: 1rem;">
+    {{ errorMessage }}
+  </div>
+
+  <form [formGroup]="leaveForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading" class="card">
+    <div class="form-grid">
+      <!-- Employee Selector (Admin Only) -->
+      <div class="form-field full-width" *ngIf="isAdmin">
+        <label for="employeeId">Select Employee *</label>
+        <select id="employeeId" formControlName="employeeId" [class.input-error]="isFieldInvalid('employeeId')">
+          <option value="" disabledSelected>Choose Employee</option>
+          <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.lastName }}</option>
+        </select>
+        <div *ngIf="isFieldInvalid('employeeId')" class="error-msg">Please select an employee profile.</div>
+      </div>
+
+      <!-- Leave Type -->
+      <div class="form-field full-width">
+        <label for="leaveType">Leave Type *</label>
+        <select id="leaveType" formControlName="leaveType" [class.input-error]="isFieldInvalid('leaveType')">
+          <option value="" disabledSelected>Choose Leave Type</option>
+          <option value="Casual">Casual Leave</option>
+          <option value="Sick">Sick Leave / Medical</option>
+          <option value="Earned">Earned / Annual Leave</option>
+          <option value="Maternity">Maternity / Paternity Leave</option>
+          <option value="Unpaid">Unpaid Leave</option>
+        </select>
+        <div *ngIf="isFieldInvalid('leaveType')" class="error-msg">Please select a leave category.</div>
+      </div>
+
+      <!-- Start Date -->
+      <div class="form-field">
+        <label for="startDate">Start Date *</label>
+        <input id="startDate" type="date" formControlName="startDate" [class.input-error]="isFieldInvalid('startDate')">
+        <div *ngIf="isFieldInvalid('startDate')" class="error-msg">Select a start date.</div>
+      </div>
+
+      <!-- End Date -->
+      <div class="form-field">
+        <label for="endDate">End Date *</label>
+        <input id="endDate" type="date" formControlName="endDate" [class.input-error]="isFieldInvalid('endDate')">
+        <div *ngIf="isFieldInvalid('endDate')" class="error-msg">Select an end date.</div>
+      </div>
+
+      <!-- Reason -->
+      <div class="form-field full-width">
+        <label for="reason">Reason for Leave *</label>
+        <textarea id="reason" formControlName="reason" rows="4" placeholder="Briefly describe the reason for this request..." [class.input-error]="isFieldInvalid('reason')"></textarea>
+        <div *ngIf="isFieldInvalid('reason')" class="error-msg">Please provide a reason for the leave.</div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a class="btn btn-secondary" routerLink="/leave">Cancel</a>
+      <button class="btn btn-primary" type="submit" [disabled]="isSubmitting">
+        <div class="spinner" *ngIf="isSubmitting" style="width: 16px; height: 16px; border-width: 2px; margin-right: 0.5rem;"></div>
+        Submit Request
+      </button>
+    </div>
+  </form>
+</div>
