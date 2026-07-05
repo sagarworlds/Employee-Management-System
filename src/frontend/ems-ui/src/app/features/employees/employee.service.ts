@@ -79,4 +79,8 @@ export class EmployeeService {
   deleteEmployee(id: string): Observable<void> {
     return this.api.delete(`${this.endpoint}/${id}`);
   }
+
+  getMe(): Observable<Employee> {
+    return this.api.get<Employee>('api/Employee/me');
+  }
 }

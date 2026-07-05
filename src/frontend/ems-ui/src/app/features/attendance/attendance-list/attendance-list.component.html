@@ -1,0 +1,130 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Attendance Tracking</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Log work hours and review historical attendance records.</p>
+    </div>
+    
+    <!-- Admin Employee Selector -->
+    <div *ngIf="isAdmin" class="select-employee-container">
+      <label for="employeeSelect" style="margin-bottom: 0.25rem;">Select Employee:</label>
+      <select id="employeeSelect" [(ngModel)]="selectedEmployeeId" (change)="onEmployeeChange()" style="width: auto; min-width: 250px;">
+        <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.lastName }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="card" style="background-color: #fee2e2; border-color: #fca5a5; color: #991b1b; margin-bottom: 1.5rem; padding: 1rem;">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Interactive Action Dashboard (Check-In/Check-Out) -->
+  <div class="card interactive-card" *ngIf="currentEmployee && !isLoading">
+    <div class="card-left">
+      <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-main);">
+        Hello, {{ currentEmployee.firstName }}!
+      </h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;" *ngIf="!hasCheckedInToday">
+        You haven't logged time for today. Please clock in when your shift starts.
+      </p>
+      <p style="color: var(--text-muted); font-size: 0.9rem;" *ngIf="hasCheckedInToday && !hasCheckedOutToday">
+        Your shift is currently active. Don't forget to check out at the end of the day.
+      </p>
+      <p style="color: var(--text-muted); font-size: 0.9rem;" *ngIf="hasCheckedOutToday">
+        Your shift for today has ended. Thank you for your work!
+      </p>
+
+      <div class="remarks-input-container" *ngIf="!hasCheckedOutToday">
+        <label for="remarks">Shift Remarks (Optional):</label>
+        <input type="text" id="remarks" [(ngModel)]="remarksText" placeholder="Working on department features...">
+      </div>
+    </div>
+
+    <div class="card-right">
+      <!-- State 1: Need to check in -->
+      <button class="btn btn-primary btn-clock" *ngIf="!hasCheckedInToday" (click)="onCheckIn()" [disabled]="isActionLoading">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+        Clock In
+      </button>
+
+      <!-- State 2: Active Shift, need to check out -->
+      <div class="active-shift-container" *ngIf="hasCheckedInToday && !hasCheckedOutToday">
+        <div style="text-align: right; margin-bottom: 0.75rem;">
+          <span class="badge badge-info">Shift Active</span>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+            In: {{ formatTime(todayRecord?.checkInTime || null) }}
+          </div>
+        </div>
+        <button class="btn btn-danger btn-clock" (click)="onCheckOut()" [disabled]="isActionLoading">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Clock Out
+        </button>
+      </div>
+
+      <!-- State 3: Logged completed today -->
+      <div class="completed-shift-container" *ngIf="hasCheckedOutToday">
+        <div class="success-icon-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--success);"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div style="text-align: center;">
+          <span style="font-weight: 600; color: var(--success); font-size: 0.95rem; display: block;">Shift Completed</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">
+            {{ formatTime(todayRecord?.checkInTime || null) }} - {{ formatTime(todayRecord?.checkOutTime || null) }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historical Logs -->
+  <div class="card" style="padding: 0; overflow: hidden; margin-top: 2rem;">
+    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 1.1rem; color: var(--text-main); font-weight: 600;">Attendance History</h3>
+      <span class="badge badge-info" style="font-weight: 600;">{{ records.length }} Days Logged</span>
+    </div>
+
+    <!-- Inner loading indicator -->
+    <div *ngIf="isLoading" class="state-container">
+      <div class="spinner"></div>
+      <p>Loading historical records...</p>
+    </div>
+
+    <!-- Empty History State -->
+    <div *ngIf="!isLoading && records.length === 0" class="state-container">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      <p>No historical attendance found for this employee.</p>
+    </div>
+
+    <!-- Log Table -->
+    <div class="table-responsive" *ngIf="!isLoading && records.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+            <th>Status</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let rec of records">
+            <td style="font-weight: 600; color: var(--text-main);">
+              {{ formatDate(rec.date) }}
+            </td>
+            <td>{{ formatTime(rec.checkInTime) }}</td>
+            <td>{{ formatTime(rec.checkOutTime) }}</td>
+            <td>
+              <span class="badge" [class]="getStatusClass(rec.status)">
+                {{ rec.status }}
+              </span>
+            </td>
+            <td style="font-style: italic; color: var(--text-muted); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+              {{ rec.remarks || '-' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
