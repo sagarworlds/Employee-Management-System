@@ -4,14 +4,27 @@ A modern, full-stack Employee Management System built using a **Clean Architectu
 
 ---
 
+## 🏷️ Tech Stack Badges
+
+![.NET](https://img.shields.io/badge/.NET%2010-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![Entity Framework Core](https://img.shields.io/badge/Entity%20Framework%20Core-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
+![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
+![SCSS](https://img.shields.io/badge/SCSS-CC6699?style=for-the-badge&logo=sass&logoColor=white)
+
+---
+
 ## 🚀 Key Features
 
 ### 🔐 Authentication & Role-Based Access
 * **Secure JWT Login**: Secure authentication with JSON Web Tokens (JWT) stored in client storage.
 * **Role-Based Views**: Dynamic sidebar navigation adapting to roles:
-  * **Admin Panel**: Employee CRUD, Department & Designation Management, Attendance auditing, and Leave Request approval.
-  * **Self Service (Employee Panel)**: Personal profile details, daily Clock-In/Clock-Out logging, and vacation/medical leave applications.
-* **Email-Based Account Linking**: Fully automated linking behind the scenes. When a new Employee record is created or a user registers, the system matches their email address and links the login credentials to their professional profile automatically.
+   * **Admin Panel**: Employee CRUD, Department & Designation Management, Attendance auditing, and Leave Request approval.
+   * **Self Service (Employee Panel)**: Personal profile details, daily Clock-In/Clock-Out logging, and vacation/medical leave applications.
+* **Email-Based Account Linking**: Fully automated linking behind the scenes. When a new Employee record is created or a user registers, the system matches their email address and links the login account.
 
 ### 👥 Employee Profile & Directory
 * **Interactive Directory**: Detailed directory list with searchable details, status indicators, and department/designation badges.
@@ -118,4 +131,20 @@ The system comes pre-populated with these user login accounts for testing:
 | `user1` | `User123!` | **Employee** | Seeded employee profile representing **John Doe**. |
 | `user2` | `User123!` | **Employee** | Seeded employee profile representing **Jane Smith**. |
 
-> **Note on Initial Setup**: When logging in as `admin` for the first time, make sure to add an employee record with the email `admin@ems.com` under **Employees -> Add Employee**. This automatically links your admin account to a professional employee card, enabling the self-service Clock-In/Clock-Out features on the dashboard.
+> **Note on Initial Setup**: When logging in as `admin` for the first time, make sure to add an employee record with the email `admin@ems.com` under **Employees -> Add Employee**. This automatically links the login account to the new employee record.
+
+---
+
+## 📖 Additional Resources
+
+- [Angular CLI Overview](https://angular.dev/tools/cli)
+- [.NET Documentation](https://learn.microsoft.com/en-us/dotnet/)
+- [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/)
+- [FluentValidation](https://fluentvalidation.net/)
+- [AutoMapper](https://automapper.org/)
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
