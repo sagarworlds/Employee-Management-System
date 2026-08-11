@@ -18,11 +18,14 @@ services:
         generateValue: true
 
   # Angular Frontend Service
-  - type: static
+  - type: web
     name: ems-ui
     plan: free
     buildCommand: cd src/frontend/ems-ui && npm install && npm run build
-    staticPublishPath: src/frontend/ems-ui/dist/ems-ui/browser
+    startCommand: npm install -g serve && serve -s dist/ems-ui/browser -l $PORT
+    envVars:
+      - key: API_BASE_URL
+        value: https://ems-api.onrender.com/api
 
 # Database
 databases:
