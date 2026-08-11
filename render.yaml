@@ -2,10 +2,10 @@ services:
   # .NET Backend API Service
   - type: web
     name: ems-api
-    env: dotnet
+    runtime: dotnet
     plan: free
     buildCommand: cd src/backend/EMS.API && dotnet publish -c Release -o out
-    startCommand: cd src/backend/EMS.API && ./out/EMS.API
+    startCommand: cd src/backend/EMS.API/out && ./EMS.API
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
@@ -17,13 +17,11 @@ services:
           property: connectionString
       - key: JWT_SECRET
         generateValue: true
-      - key: CORS_ORIGIN
-        value: https://ems-ui.onrender.com
 
   # Angular Frontend Service
   - type: web
     name: ems-ui
-    env: static
+    runtime: static
     plan: free
     buildCommand: cd src/frontend/ems-ui && npm install && npm run build
     staticPublishPath: src/frontend/ems-ui/dist/ems-ui/browser
@@ -31,6 +29,5 @@ services:
 # Database
 databases:
   - name: ems-db
+    databaseName: ems_db
     plan: free
-    databaseName: ems
-    ipAllowList: []
