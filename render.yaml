@@ -1,0 +1,58 @@
+services:
+  # .NET Backend API Service
+  - type: web
+    name: ems-api
+    env: dotnet
+    plan: free
+    buildCommand: |
+      cd src/backend && \
+      dotnet restore && \
+      dotnet build -c Release
+    startCommand: cd src/backend/EMS.API && dotnet run --configuration Release
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:$PORT
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: ems-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: ${{ web.ems_ui.url }}
+    healthCheckPath: /health
+    healthCheckInterval: 30
+    maxInstanceAge: 3600
+    routes:
+      - type: http
+        source: ^/api/(.*)$
+        destination: http://0.0.0.0:$PORT/api/$1
+
+  # Angular Frontend Service
+  - type: web
+    name: ems-ui
+    env: static
+    plan: free
+    buildCommand: |
+      cd src/frontend/ems-ui && \
+      npm install && \
+      npm run build
+    staticPublishPath: src/frontend/ems-ui/dist/ems-ui/browser
+    envVars:
+      - key: API_BASE_URL
+        value: ${{ web.ems-api.url }}/api
+    routes:
+      - type: http
+        source: ^/(.*)$
+        destination: /index.html
+
+# Database
+databases:
+  - name: ems-db
+    plan: free
+    databaseName: ems
+    databaseUser: ems_user
+    postgreSQL:
+      version: 16
