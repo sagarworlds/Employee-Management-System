@@ -1,8 +1,6 @@
 services:
-  # .NET Backend API Service
   - type: web
     name: ems-api
-    plan: free
     buildCommand: cd src/backend/EMS.API && dotnet publish -c Release -o out
     startCommand: cd src/backend/EMS.API/out && ./EMS.API
     envVars:
@@ -17,18 +15,14 @@ services:
       - key: JWT_SECRET
         generateValue: true
 
-  # Angular Frontend Service
   - type: web
     name: ems-ui
-    plan: free
     buildCommand: cd src/frontend/ems-ui && npm install && npm run build
-    startCommand: npm install -g serve && serve -s dist/ems-ui/browser -l $PORT
+    startCommand: cd src/frontend/ems-ui && npm install -g serve && serve -s dist/ems-ui/browser -l $PORT
     envVars:
       - key: API_BASE_URL
         value: https://ems-api.onrender.com/api
 
-# Database
 databases:
   - name: ems-db
     databaseName: ems_db
-    plan: free
