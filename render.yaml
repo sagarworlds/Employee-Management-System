@@ -2,7 +2,6 @@ services:
   # .NET Backend API Service
   - type: web
     name: ems-api
-    runtime: dotnet
     plan: free
     buildCommand: cd src/backend/EMS.API && dotnet publish -c Release -o out
     startCommand: cd src/backend/EMS.API/out && ./EMS.API
@@ -21,7 +20,6 @@ services:
   # Angular Frontend Service
   - type: web
     name: ems-ui
-    runtime: static
     plan: free
     buildCommand: cd src/frontend/ems-ui && npm install && npm run build
     staticPublishPath: src/frontend/ems-ui/dist/ems-ui/browser
